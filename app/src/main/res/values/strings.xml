@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">MediaPlayer</string>
+    <string name="home">Home</string>
+    <string name="my_music">My Music</string>
+    <string name="downloaded_song">Downloaded</string>
+    <string name="card_view">CardView Description</string>
+    <string name="image_genre">Image Genre</string>
+    <string name="image_track">Image Track</string>
+    <string name="suggested_playlists">SUGGESTED PLAYLISTS</string>
+    <string name="top_trending">TOP TRENDING</string>
+    <string name="all_music">All music</string>
+    <string name="title_track_name">Ten bai hat</string>
+    <string name="title_artist_name">Ten ca si</string>
+    <string name="all_audio">All audio</string>
+    <string name="country">Country</string>
+    <string name="ambient">Ambient</string>
+    <string name="rock">Rock</string>
+    <string name="classical">Classical</string>
+    <string name="error_message">Data Not Available</string>
+    <string name="service_on_failure">Không tải được bài hát</string>
+    <string name="duration">4:00</string>
+    <string name="current_time">0:00</string>
+    <string name="image_loop">image_loop</string>
+    <string name="image_next">image_next</string>
+    <string name="image_play">imgage_play</string>
+    <string name="image_previous">image_previous</string>
+    <string name="image_shuffle">image_shuffle</string>
+    <string name="image_playlist">image_playlist</string>
+    <string name="image_download">image_download</string>
+    <string name="image_artwork">image_artwork</string>
+    <string name="image_back">image_back</string>
+</resources>
