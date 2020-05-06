@@ -1,78 +1,99 @@
 package com.example.myapplication
 
-import android.media.AudioManager
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    private val mediaPlayer by lazy {
-        MediaPlayer().apply {
-            setAudioStreamType(AudioManager.STREAM_MUSIC)
-            isLooping = true
-        }
-    }
-
-    private var currentPosition = 0
-    private var currentTime = 0
-    private val streams = listOf(
-        "https://api.soundcloud.com/tracks/329471802/stream?client_id=7c8ae3eed403b61716254856c4155475",
-        "https://api.soundcloud.com/tracks/126938662/stream/?client_id=7c8ae3eed403b61716254856c4155475",
-        "https://api.soundcloud.com/tracks/252250844/stream/?client_id=7c8ae3eed403b61716254856c4155475",
-        "https://api.soundcloud.com/tracks/329471802/stream?client_id=7c8ae3eed403b61716254856c4155475",
-        "https://api.soundcloud.com/tracks/126938662/stream/?client_id=7c8ae3eed403b61716254856c4155475",
-        "https://api.soundcloud.com/tracks/252250844/stream/?client_id=7c8ae3eed403b61716254856c4155475"
-    )
+    private val songs = listOf(R.raw.first, R.raw.second, R.raw.third)
+    private var mediaPlayer = MediaPlayer()
+    private var currentSongIndex = 0
+    private var currentSongTimePosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        initViews()
+        startPlay(songs[currentSongIndex])
+    }
+
+    private fun initViews() {
         previous.setOnClickListener(this)
         next.setOnClickListener(this)
         play.setOnClickListener(this)
-
-        playMusic(streams[currentPosition])
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.next -> next()
             R.id.back -> back()
-            R.id.play -> if (mediaPlayer.isPlaying) {
-                mediaPlayer.pause()
-                currentTime = mediaPlayer.currentPosition
-                play.setImageResource(R.drawable.ic_play_arrow_black_24dp)
-            } else {
-                mediaPlayer.start()
-                mediaPlayer.seekTo(currentTime)
-                play.setImageResource(R.drawable.ic_pause)
-            }
+            R.id.play -> if (mediaPlayer.isPlaying) pause() else playContinue()
         }
     }
 
     private fun next() {
         mediaPlayer.stop()
         mediaPlayer.reset()
-        playMusic(streams[(++currentPosition) % streams.size])
+        startPlay(songs[(++currentSongIndex) % songs.size])
     }
 
     private fun back() {
         mediaPlayer.stop()
         mediaPlayer.reset()
-        playMusic(streams[(--currentPosition + streams.size) % streams.size])
+        startPlay(songs[(--currentSongIndex + songs.size) % songs.size])
     }
 
-    private fun playMusic(stream: String) {
-        mediaPlayer.apply {
-            setDataSource(stream)
-            setOnPreparedListener {
-                start()
-            }
-            prepare()
-        }
+    private fun startPlay(songResId: Int) {
+        showSongInformation(songResId)
+        mediaPlayer = MediaPlayer.create(this, songResId)
+        mediaPlayer.start()
+        setProgress()
     }
+
+    private fun pause() {
+        mediaPlayer.pause()
+        currentSongTimePosition = mediaPlayer.currentPosition
+        play.setImageResource(R.drawable.ic_play_arrow_black_24dp)
+    }
+
+    private fun playContinue() {
+        startPlay(songs[currentSongIndex])
+        mediaPlayer.seekTo(currentSongTimePosition)
+        play.setImageResource(R.drawable.ic_pause)
+    }
+
+    private fun showSongInformation(resId: Int) {
+        val mediaPath = Uri.parse("android.resource://$packageName/$resId")
+        val metadata = MediaMetadataRetriever().apply {
+            setDataSource(this@MainActivity, mediaPath)
+        }
+        val songDuration =
+            metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toInt()
+        duration.text = songDuration.toTime()
+
+        val songTitle = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+        textTrackName.text = songTitle
+
+        val songArtist = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+        textArtistName.text = songArtist
+
+    }
+
+    private fun setProgress() {
+        seekTime.max = mediaPlayer.duration
+        Executors.newScheduledThreadPool(1).scheduleWithFixedDelay({
+            seekTime.progress = mediaPlayer.currentPosition
+        }, 1, 1, TimeUnit.SECONDS)
+    }
+
+    private fun Int.toTime() = "${this / 60000}:${(this / 1000) % 60}"
 }

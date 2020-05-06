@@ -62,6 +62,7 @@
         android:id="@+id/artwork"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="24dp"
         android:contentDescription="@null"
         android:elevation="@dimen/dp_2"
         android:scaleType="centerCrop"
@@ -69,7 +70,7 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toStartOf="@id/guidelineEnd"
         app:layout_constraintStart_toEndOf="@id/guidelineStart"
-        app:layout_constraintTop_toBottomOf="@id/guidelineTop" />
+        app:layout_constraintTop_toBottomOf="@+id/textArtistName" />
 
     <ImageView
         android:id="@+id/download"
@@ -204,13 +205,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.9" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineBottom"
